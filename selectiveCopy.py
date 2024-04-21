@@ -11,11 +11,14 @@ def recursiveCopy(inputOrigPath, inputDestPath):
             origPath = join(inputOrigPath, origFile)
             destPath = join(inputDestPath)
             if isfile(origPath):
-                # print('copying file', origPath)
+                # print('copying file', origPath, destPath)
                 copy2(origPath, destPath)
             else:
-                # print('copying full folder', origPath, destPath)
-                copytree(origPath, join(inputOrigPath, destPath), dirs_exist_ok=True)
+                destPathFolder = origPath.split('/')
+                destPathFolder[0] = destPath
+                destPathFolder = '/'.join(destPathFolder)
+                # print('copying full folder', origPath, destPathFolder)
+                copytree(origPath, destPathFolder, dirs_exist_ok=True)
         else:
             origPath = join(inputOrigPath, origFile)
             destPath = join(inputDestPath, origFile)
@@ -24,7 +27,7 @@ def recursiveCopy(inputOrigPath, inputDestPath):
                 origModified = stat(origPath).st_mtime
                 destModified = stat(destPath).st_mtime
                 if (origModified != destModified):
-                    # print('replacing file in dest', destPath)
+                    # print('copying file, replace', origPath, destPath)
                     copy2(origPath, destPath)
                 else:
                     # print('equal modified, skip')
@@ -61,10 +64,10 @@ if __name__ == "__main__":
     originPath = sys.argv[1]
     destinationPath = sys.argv[2]
     print('--- Starting with args:', originPath, destinationPath, '---')
-    # look through all files in destination not in original
-    # print('Performing recursive delete')
     # look through all files in the original folder not in the destination
     # print('Performing recusive copy')
     recursiveCopy(originPath, destinationPath)
+    # look through all files in destination not in original
+    # print('Performing recursive delete')
     recursiveDelete(originPath, destinationPath)
     print('--- Complete ---')
